@@ -39,7 +39,7 @@ export const postJugadorEquipo = (
     const nombre = req.body.nombre;
     const goles = Number(req.body.goles);
 
-    if (!nombre?.trim() ||
+    if (!nombre?.trim?.() ||
         req.body.goles === undefined ||
         req.body.goles === null ||
         req.body.goles === "" ||

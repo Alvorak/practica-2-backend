@@ -39,6 +39,7 @@ export const getEquipoWithId = (
     res.json(equipo);
 }
 
+
 export const deleteEquipo = (
     req: Request,
     res: Response
@@ -69,7 +70,7 @@ export const putEquipo = (
 
     const { nombre, division } = req.body;
 
-    if (!nombre?.trim() || !division?.trim()) {
+    if (!nombre?.trim?.() || !division?.trim?.()) {
         res.status(400).json({
             message: "Nombre o división incorrectos"
         });
@@ -99,7 +100,7 @@ export const postEquipo = (
 ) => {
     const { nombre, division } = req.body;
 
-    if (!nombre?.trim() || !division?.trim()) {
+    if (!nombre?.trim?.() || !division?.trim?.()) {
         res.status(400).json({
             message: "Nombre o división incorrectos"
         });
@@ -134,8 +135,8 @@ export const patchEquipo = (
 
     const { nombre, division } = req.body;
 
-    if ((nombre !== undefined && !nombre?.trim()) ||
-        (division !== undefined && !division?.trim())) {
+    if ((nombre !== undefined && !nombre?.trim?.()) ||
+        (division !== undefined && !division?.trim?.())) {
         res.status(400).json({
             message: "Nombre o división incorrectos"
         });
