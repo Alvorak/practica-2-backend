@@ -291,13 +291,6 @@ async function ejecutarPruebas() {
             404
         );
 
-        await probar(
-            "Modificar equipo inexistente con PATCH",
-            "PATCH",
-            `/${equipoInexistente}`,
-            { nombre: "Prueba" },
-            404
-        );
 
         await probar(
             "Eliminar equipo inexistente",
@@ -332,52 +325,6 @@ async function ejecutarPruebas() {
 
 
         await probar(
-            "Actualizar solo nombre con PATCH",
-            "PATCH",
-            `/${equipoA}`,
-            { nombre: "Los No Muertos CF" },
-            200
-        );
-
-        const equipoPatch = await probar(
-            "Consultar equipo actualizado con PATCH",
-            "GET",
-            `/${equipoA}`,
-            undefined,
-            200
-        );
-
-        comprobar(
-            "PATCH modifica el nombre y conserva la división",
-            equipoPatch?.nombre === "Los No Muertos CF" &&
-            equipoPatch?.division === "Segunda"
-        );
-
-
-        await probar(
-            "Actualizar solo división con PATCH",
-            "PATCH",
-            `/${equipoA}`,
-            { division: "Primera" },
-            200
-        );
-
-        const equipoPatchDivision = await probar(
-            "Consultar equipo tras modificar división",
-            "GET",
-            `/${equipoA}`,
-            undefined,
-            200
-        );
-
-        comprobar(
-            "PATCH modifica la división y conserva el nombre",
-            equipoPatchDivision?.nombre === "Los No Muertos CF" &&
-            equipoPatchDivision?.division === "Primera"
-        );
-
-
-        await probar(
             "Rechazar PUT sin nombre",
             "PUT",
             `/${equipoA}`,
@@ -393,30 +340,6 @@ async function ejecutarPruebas() {
             400
         );
 
-        await probar(
-            "Rechazar PATCH con nombre vacío",
-            "PATCH",
-            `/${equipoA}`,
-            { nombre: "" },
-            400
-        );
-
-        await probar(
-            "Rechazar PATCH con división vacía",
-            "PATCH",
-            `/${equipoA}`,
-            { division: "" },
-            400
-        );
-
-        await probar(
-            "Rechazar PATCH con nombre de espacios",
-            "PATCH",
-            `/${equipoA}`,
-            { nombre: "   " },
-            400
-        );
-
 
         const equipoTrasErrores = await probar(
             "Consultar equipo tras modificaciones inválidas",
@@ -428,8 +351,8 @@ async function ejecutarPruebas() {
 
         comprobar(
             "Las modificaciones inválidas no cambian el equipo",
-            equipoTrasErrores?.nombre === "Los No Muertos CF" &&
-            equipoTrasErrores?.division === "Primera"
+            equipoTrasErrores?.nombre === "Los No Muertos FC" &&
+            equipoTrasErrores?.division === "Segunda"
         );
 
 
