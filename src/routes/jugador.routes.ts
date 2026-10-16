@@ -4,8 +4,11 @@ import { getJugadoresEquipo, postJugadorEquipo, deleteJugadorEquipo, moverJugado
 const router = Router();
 
 router.get("/:id/jugadores", getJugadoresEquipo);
+
 router.post("/:id/jugadores", postJugadorEquipo);
+
 router.delete("/:id/jugadores/:jugadorId", deleteJugadorEquipo);
+
 router.patch("/:id/jugadores/:jugadorId/mover", moverJugadorEquipos);
 
 export default router;
