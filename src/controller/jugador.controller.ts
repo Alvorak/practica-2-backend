@@ -17,7 +17,7 @@ export const getJugadoresEquipo = (
         return;
     }
 
-    res.json(equipo.jugadoresE);
+    res.json(equipo.jugadores);
 }
 
 
@@ -50,7 +50,7 @@ export const postJugadorEquipo = (
         return;
     }
 
-    const jugadores = equipos.flatMap(x => x.jugadoresE);
+    const jugadores = equipos.flatMap(x => x.jugadores);
 
     const nuevoJugador = {
         id: Math.max(0, ...jugadores.map(x => x.id)) + 1,
@@ -60,7 +60,7 @@ export const postJugadorEquipo = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadoresE: [...x.jugadoresE, nuevoJugador] }
+            ? { ...x, jugadores: [...x.jugadores, nuevoJugador] }
             : x
     ));
 
@@ -87,7 +87,7 @@ export const deleteJugadorEquipo = (
         return;
     }
 
-    const jugador = equipo.jugadoresE.find(x => x.id === jugadorId);
+    const jugador = equipo.jugadores.find(x => x.id === jugadorId);
 
     if (!jugador) {
         res.status(404).json({
@@ -98,7 +98,7 @@ export const deleteJugadorEquipo = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadoresE: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            ? { ...x, jugadores: x.jugadores.filter(j => j.id !== jugadorId) }
             : x
     ));
 
@@ -125,7 +125,7 @@ export const moverJugadorEquipos = (
         return;
     }
 
-    const jugador = equipo.jugadoresE.find(x => x.id === jugadorId);
+    const jugador = equipo.jugadores.find(x => x.id === jugadorId);
 
     if (!jugador) {
         res.status(404).json({
@@ -159,9 +159,9 @@ export const moverJugadorEquipos = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadoresE: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            ? { ...x, jugadores: x.jugadores.filter(j => j.id !== jugadorId) }
             : x.id === equipoDestinoId
-                ? { ...x, jugadoresE: [...x.jugadoresE, jugador] }
+                ? { ...x, jugadores: [...x.jugadores, jugador] }
                 : x
     ));
 

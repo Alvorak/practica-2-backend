@@ -5,5 +5,5 @@ export type EquipoT = {
     id: number,
     nombre: string,
     division: string,
-    jugadoresE: JugadorT[]
+    jugadores: JugadorT[]
 }

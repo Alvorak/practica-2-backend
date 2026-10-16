@@ -111,7 +111,7 @@ export const postEquipo = (
         id: Math.max(0, ...equipos.map(x => x.id)) + 1,
         nombre,
         division,
-        jugadoresE: []
+        jugadores: []
     };
 
     changeEquipo([...equipos, nuevoEquipo]);
