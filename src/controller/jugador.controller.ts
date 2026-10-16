@@ -102,6 +102,7 @@ export const deleteJugadorEquipo = (
     });
 }
 
+//patch de moover
 export const moverJugadorEquipos = (
     req: Request,
     res: Response
