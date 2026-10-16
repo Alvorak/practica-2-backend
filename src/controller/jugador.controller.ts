@@ -1,86 +1,63 @@
 import type { Request, Response } from "express";
-import { changeJugador, jugadores } from "../data/jugador.data.js";
+import { changeEquipo, equipos } from "../data/equipo.data.js";
 
-export const getJugadores = (
+
+export const getJugadoresEquipo = (
     req: Request,
     res: Response
 ) => {
-    res.json(jugadores);
-}
+    const id = Number(req.params.id);
 
-const findJugador = (id: number, res: Response) => {
-    const jugador = jugadores.find(x => x.id === id);
+    const equipo = equipos.find(x => x.id === id);
 
-    if (!jugador) {
+    if (!equipo) {
         res.status(404).json({
-            message: "Jugador no encontrado"
+            message: "Equipo no encontrado"
         });
         return;
     }
 
-    return jugador;
+    res.json(equipo.jugadoresE);
 }
 
-export const getJugadorWithId = (
+export const postJugadorEquipo = (
     req: Request,
     res: Response
 ) => {
     const id = Number(req.params.id);
 
-    const jugador = findJugador(id, res);
+    const equipo = equipos.find(x => x.id === id);
 
-    if (!jugador) return;
+    if (!equipo) {
+        res.status(404).json({
+            message: "Equipo no encontrado"
+        });
+        return;
+    }
 
-    res.json(jugador);
-}
+    const { nombre, goles } = req.body;
 
-export const deleteJugador = (
-    req: Request,
-    res: Response
-) => {
-    const id = Number(req.params.id);
+    if (typeof nombre !== "string" || !nombre.trim() ||
+        !Number.isInteger(goles) || goles < 0) {
+        res.status(400).json({
+            message: "Datos del jugador incorrectos"
+        });
+        return;
+    }
 
-    const jugador = findJugador(id, res);
+    const jugadores = equipos.flatMap(x => x.jugadoresE);
 
-    if (!jugador) return;
-
-    changeJugador(jugadores.filter(x => x.id !== id));
-
-    res.json({
-        message: `Jugador con id: ${id} eliminado`
-    });
-}
-
-export const putJugador = (
-    req: Request,
-    res: Response
-) => {
-    const id = Number(req.params.id);
-
-    const jugador = findJugador(id, res);
-
-    if (!jugador) return;
-
-    const updatedJugador = { ...req.body, id };
-
-    changeJugador(jugadores.map(x => x.id === id ? updatedJugador : x));
-
-    res.json({
-        message: `Jugador con id: ${id} actualizado`,
-        jugador: updatedJugador
-    });
-}
-
-export const postJugador = (
-    req: Request,
-    res: Response
-) => {
     const nuevoJugador = {
-        ...req.body,
-        id: Math.random()
+        id: Math.max(0, ...jugadores.map(x => x.id)) + 1,
+        nombre,
+        goles
     };
 
-    changeJugador([...jugadores, nuevoJugador]);
+    changeEquipo(equipos.map(x =>
+        x.id === id
+            ? { ...x, jugadores: [...x.jugadoresE, nuevoJugador] }
+            : x
+    ));
 
     res.status(201).json({
         message: "Jugador creado correctamente",
@@ -88,22 +65,102 @@ export const postJugador = (
     });
 }
 
-export const patchJugador = (
+
+export const deleteJugadorEquipo = (
     req: Request,
     res: Response
 ) => {
     const id = Number(req.params.id);
+    const jugadorId = Number(req.params.jugadorId);
 
-    const jugador = findJugador(id, res);
+    const equipo = equipos.find(x => x.id === id);
 
-    if (!jugador) return;
+    if (!equipo) {
+        res.status(404).json({
+            message: "Equipo no encontrado"
+        });
+        return;
+    }
 
-    const updatedJugador = { ...jugador, ...req.body, id };
+    const jugador = equipo.jugadoresE.find(x => x.id === jugadorId);
 
-    changeJugador(jugadores.map(x => x.id === id ? updatedJugador : x));
+    if (!jugador) {
+        res.status(404).json({
+            message: "Jugador no encontrado en este equipo"
+        });
+        return;
+    }
+
+    changeEquipo(equipos.map(x =>
+        x.id === id
+            ? { ...x, jugadores: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            : x
+    ));
 
     res.json({
-        message: `Jugador con id: ${id} actualizado`,
-        jugador: updatedJugador
+        message: `Jugador con id: ${jugadorId} eliminado`
+    });
+}
+
+export const moverJugadorEquipos = (
+    req: Request,
+    res: Response
+) => {
+    const id = Number(req.params.id);
+    const jugadorId = Number(req.params.jugadorId);
+    const equipoDestinoId = Number(req.body.equipoDestinoId);
+
+    const equipo = equipos.find(x => x.id === id);
+
+    if (!equipo) {
+        res.status(404).json({
+            message: "Equipo de origen no encontrado"
+        });
+        return;
+    }
+
+    const jugador = equipo.jugadoresE.find(x => x.id === jugadorId);
+
+    if (!jugador) {
+        res.status(404).json({
+            message: "Jugador no encontrado en este equipo"
+        });
+        return;
+    }
+
+    if (!equipoDestinoId) {
+        res.status(400).json({
+            message: "ID del equipo de destino incorrecto"
+        });
+        return;
+    }
+
+    if (id === equipoDestinoId) {
+        res.status(400).json({
+            message: "El jugador ya pertenece a este equipo"
+        });
+        return;
+    }
+
+    const equipoDestino = equipos.find(x => x.id === equipoDestinoId);
+
+    if (!equipoDestino) {
+        res.status(404).json({
+            message: "Equipo de destino no encontrado"
+        });
+        return;
+    }
+
+    changeEquipo(equipos.map(x =>
+        x.id === id
+            ? { ...x, jugadores: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            : x.id === equipoDestinoId
+                ? { ...x, jugadores: [...x.jugadoresE, jugador] }
+                : x
+    ));
+
+    res.json({
+        message: `Jugador con id: ${jugadorId} movido correctamente`,
+        jugador: jugador
     });
 }

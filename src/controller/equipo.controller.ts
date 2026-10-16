@@ -30,7 +30,7 @@ export const getEquipoWithId = (
 
     const equipo = findEquipo(id, res);
 
-    if (!equipo) return;
+    if (!equipo) return; // asi return con res de find
 
     res.json(equipo);
 }
@@ -43,7 +43,7 @@ export const deleteEquipo = (
 
     const equipo = findEquipo(id, res);
 
-    if (!equipo) return;
+    if (!equipo) return; // asi return con res de find
 
     changeEquipo(equipos.filter(x => x.id !== id));
 
@@ -51,6 +51,7 @@ export const deleteEquipo = (
         message: `Equipo con id: ${id} eliminado`
     });
 }
+
 
 export const putEquipo = (
     req: Request,
@@ -60,9 +61,23 @@ export const putEquipo = (
 
     const equipo = findEquipo(id, res);
 
-    if (!equipo) return;
+    if (!equipo) return; // asi return con res de find // asi return con res de find
 
-    const updatedEquipo = { ...req.body, id };
+    const { nombre, division } = req.body;
+
+    if (typeof nombre !== "string" || !nombre.trim() ||
+        typeof division !== "string" || !division.trim()) {
+        res.status(400).json({
+            message: "Nombre o división incorrectos"
+        });
+        return;
+    }
+
+    const updatedEquipo = {
+        ...equipo,
+        nombre,
+        division
+    };
 
     changeEquipo(equipos.map(x => x.id === id ? updatedEquipo : x));
 
@@ -72,13 +87,27 @@ export const putEquipo = (
     });
 }
 
+
+//puede venir equipo con jugadores dentro?
 export const postEquipo = (
     req: Request,
     res: Response
 ) => {
+    const { nombre, division } = req.body;
+
+    if (typeof nombre !== "string" || !nombre.trim() ||
+        typeof division !== "string" || !division.trim()) {
+        res.status(400).json({
+            message: "Nombre o división incorrectos"
+        });
+        return;
+    }
+
     const nuevoEquipo = {
-        ...req.body,
-        id: Math.random()
+        id: Math.random(),
+        nombre,
+        division,
+        jugadoresE: []
     };
 
     changeEquipo([...equipos, nuevoEquipo]);
@@ -97,9 +126,23 @@ export const patchEquipo = (
 
     const equipo = findEquipo(id, res);
 
-    if (!equipo) return;
+    if (!equipo) return; //asi con return con res de find
 
-    const updatedEquipo = { ...equipo, ...req.body, id };
+    const { nombre, division } = req.body;
+
+    if ((nombre !== undefined && (typeof nombre !== "string" || !nombre.trim())) ||
+        (division !== undefined && (typeof division !== "string" || !division.trim()))) {
+        res.status(400).json({
+            message: "Nombre o división incorrectos"
+        });
+        return;
+    }
+
+    const updatedEquipo = {
+        ...equipo,
+        nombre: nombre ?? equipo.nombre,
+        division: division ?? equipo.division
+    };
 
     changeEquipo(equipos.map(x => x.id === id ? updatedEquipo : x));
 
