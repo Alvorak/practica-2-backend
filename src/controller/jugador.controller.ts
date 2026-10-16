@@ -20,6 +20,7 @@ export const getJugadoresEquipo = (
     res.json(equipo.jugadoresE);
 }
 
+
 export const postJugadorEquipo = (
     req: Request,
     res: Response
@@ -35,10 +36,14 @@ export const postJugadorEquipo = (
         return;
     }
 
-    const { nombre, goles } = req.body;
+    const nombre = req.body.nombre;
+    const goles = Number(req.body.goles);
 
-    if (typeof nombre !== "string" || !nombre.trim() ||
-        !Number.isInteger(goles) || goles < 0) {
+    if (!nombre?.trim() ||
+        req.body.goles === undefined ||
+        req.body.goles === null ||
+        req.body.goles === "" ||
+        goles < 0 || goles % 1 !== 0) {
         res.status(400).json({
             message: "Datos del jugador incorrectos"
         });
@@ -55,7 +60,7 @@ export const postJugadorEquipo = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadores: [...x.jugadoresE, nuevoJugador] }
+            ? { ...x, jugadoresE: [...x.jugadoresE, nuevoJugador] }
             : x
     ));
 
@@ -93,7 +98,7 @@ export const deleteJugadorEquipo = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadores: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            ? { ...x, jugadoresE: x.jugadoresE.filter(j => j.id !== jugadorId) }
             : x
     ));
 
@@ -102,7 +107,7 @@ export const deleteJugadorEquipo = (
     });
 }
 
-//patch de moover
+
 export const moverJugadorEquipos = (
     req: Request,
     res: Response
@@ -154,9 +159,9 @@ export const moverJugadorEquipos = (
 
     changeEquipo(equipos.map(x =>
         x.id === id
-            ? { ...x, jugadores: x.jugadoresE.filter(j => j.id !== jugadorId) }
+            ? { ...x, jugadoresE: x.jugadoresE.filter(j => j.id !== jugadorId) }
             : x.id === equipoDestinoId
-                ? { ...x, jugadores: [...x.jugadoresE, jugador] }
+                ? { ...x, jugadoresE: [...x.jugadoresE, jugador] }
                 : x
     ));
 
