@@ -108,7 +108,7 @@ export const postEquipo = (
     }
 
     const nuevoEquipo = {
-        id: Math.max(0, ...equipos.map(x => x.id)) + 1,
+        id: Math.random(),
         nombre,
         division,
         jugadores: []

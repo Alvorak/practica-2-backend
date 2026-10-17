@@ -53,7 +53,7 @@ export const postJugadorEquipo = (
     const jugadores = equipos.flatMap(x => x.jugadores);
 
     const nuevoJugador = {
-        id: Math.max(0, ...jugadores.map(x => x.id)) + 1,
+        id: Math.random(),
         nombre,
         goles
     };
